@@ -85,15 +85,15 @@ ez.color <- colorRampPalette(
 
 ref.yr <- c("1950_2000")
 exp.yr <- c( "2010_2020", "2040_2050", "2070_2080","2090_2100")
-exp.yr.txt <- c( "2010s", "2040s", "2070","2100s")
+exp.yr.txt <- c( "2010-2040", "2040-2070", "2070-2090","2090-2100")
 
 
 
-#scenario <- c("ssp126","ssp245","ssp370","ssp585")
-#scenario.txt <- c("SSP1-2.6","SSP2-4.5","SSP3-7.0","SSP5-8.5")
+scenario <- c("ssp126","ssp245","ssp370","ssp585")
+scenario.txt <- c("SSP126","SSP245","SSP370","SSP585")
 
-scenario <- c("ssp585")
-scenario.txt <- c("SSP5-8.5")
+#scenario <- c("ssp585")
+#scenario.txt <- c("SSP585")
 
 
 
@@ -115,11 +115,12 @@ LU_A <- as.matrix(raster(inputfileA, varname="CZ_index")) *mask
 
 # assign GDD zone to Alphabat 
 GDD_Z <- LU_A
-gdd.txt <- c("A","B","C","D","E","F","G","H","I","J","K","L","M","N","M","O")
+cz_name <-  c("A1","A","A2","B","B1","C","D","E",
+              "F","G","H","I",
+              "J","K","L","M","N","O")
 GDD_Z[GDD_Z <= 0.] <- NA
-GDD_Z[(GDD_Z > 0)&(GDD_Z<=3)] <- c("A")
-for (iz in 4:18) {
-GDD_Z[GDD_Z == iz] <- gdd.txt[iz-2]
+for (iz in 1:18) {
+GDD_Z[GDD_Z == iz] <- cz_name[iz]
 }
 
 
@@ -171,7 +172,25 @@ for (ix in 1:nx) {
 cz_table_org <- aggregate(org.table$area, by=list(gdd=org.table$gdd,zon=org.table$zon ), FUN=sum)
 colnames(cz_table_org) <- c("gdd","zon","area")
 
-print(cz_table_org)
+#print(cz_table_org)
+
+data1 <- cz_table_org                                                 # Replicate original data
+data1$zon <- factor(data1$zon,                                    # Change ordering manually
+                  levels = c("S65","S55","S45","S35","S25","S15","S05",
+                             "N05","N15","N25","N35","N45","N55","N65"))
+#
+col.txt <- cz.color 
+
+bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identity") + coord_flip() + scale_fill_manual(
+           values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
+                      "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
+                      "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4"))
+bar_plot <- bar_plot +  ylab(expression(Land~Area~(Mkm^{"2"}) )) + xlab("Zonal Band")
+bar_plot <- bar_plot + guides(fill=guide_legend(title="EnZ"))
+bar_plot <- bar_plot + theme(legend.position = c(0.92, 0.32), legend.key.size = unit(0.4, 'cm'))
+#assign to bar_plot_1
+assign("bar_plot_1", bar_plot)
+
 
 
 plot.gd <- fun_a2r(input.arr=t(LU_A[,ny:1]) )
@@ -199,20 +218,23 @@ par(oma=c(1,0,1,0), mar=c(5,0,5,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), ne
 layout(matrix(data=c(1,2,3,4,5,6,7,8,9,10),nrow=2, ncol=5,  byrow=TRUE),
        widths=c(1,1,1), heights=c(1,1,1))
 #
+irun=0
 # get  nc file for migration plot
-for (isc in 1:1) {
-for (jyr in 1:4) {
-
-inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_histor_",  ref.yr,"_climate_zone.nc",sep=""))
+for (isc in 1:4) {
+for (jyr in 1:3) {
+irun = irun +1
+inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr],"_climate_zone.nc",sep=""))
 LU_A <- as.matrix(raster(inputfileA, varname="CZ_index")) *mask
 
 # assign GDD zone to Alphabat 
-GDD_Z <- LU_A
-gdd.txt <- c("A","B","C","D","E","F","G","H","I","J","K","L","M","N","M","O")
+iGDD_Z <- LU_A
+
+cz_name <-  c("A1","A","A2","B","B1","C","D","E",
+              "F","G","H","I",
+              "J","K","L","M","N","O")
 GDD_Z[GDD_Z <= 0.] <- NA
-GDD_Z[(GDD_Z > 0)&(GDD_Z<=3)] <- c("A")
-for (iz in 4:18) {
-GDD_Z[GDD_Z == iz] <- gdd.txt[iz-2]
+for (iz in 1:18) {
+GDD_Z[GDD_Z == iz] <- cz_name[iz]
 }
 
 
@@ -264,21 +286,21 @@ for (ix in 1:nx) {
 cz_table_org <- aggregate(org.table$area, by=list(gdd=org.table$gdd,zon=org.table$zon ), FUN=sum)
 colnames(cz_table_org) <- c("gdd","zon","area")
 
-print(cz_table_org)
+#print(cz_table_org)
 
 
-inputfileB <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr],"_climate_zone.nc",sep=""))
+inputfileB <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr+1],"_climate_zone.nc",sep=""))
 LU_B <- as.matrix(raster(inputfileB, varname="CZ_index")) *mask
 
-# assign GDD zone to Alphabat 
 GDD_Z <- LU_B
-gdd.txt <- c("A","B","C","D","E","F","G","H","I","J","K","L","M","N","M","O")
+# assign GDD zone to Alphabat 
+cz_name <-  c("A1","A","A2","B","B1","C","D","E",
+              "F","G","H","I",
+              "J","K","L","M","N","O")
 GDD_Z[GDD_Z <= 0.] <- NA
-GDD_Z[(GDD_Z > 0)&(GDD_Z<=3)] <- c("A")
-for (iz in 4:18) {
-GDD_Z[GDD_Z == iz] <- gdd.txt[iz-2]
+for (iz in 1:18) {
+GDD_Z[GDD_Z == iz] <- cz_name[iz]
 }
-
 
 #te a tmp table for the analysis
 tmp.table <- data.frame()
@@ -328,44 +350,47 @@ for (ix in 1:nx) {
 cz_table <- aggregate(tmp.table$area, by=list(gdd=tmp.table$gdd,zon=tmp.table$zon ), FUN=sum)
 colnames(cz_table) <- c("gdd","zon","area")
 
-print(cz_table)
+#print(cz_table)
 
-
-if (jyr >1 ) {
 
 
 # calculate the diff table 
 cz_table_dif <- data.frame()
 
-
 # set org table as first table
 
-for (iz in 1:99) {
-   cz_table$gdd <- as.character(cz_table$gdd)
-   cz_table_org$gdd <- as.character(cz_table_org$gdd)
+for ( iz in 1:length(cz_table$gdd) ) {
+    cz_table$gdd <- as.character(cz_table$gdd)
+    cz_table_org$gdd <- as.character(cz_table_org$gdd)
 
-   cz_table$zon <- as.character(cz_table$zon)
-   cz_table_org$zon <- as.character(cz_table_org$zon)
+    cz_table$zon <- as.character(cz_table$zon)
+    cz_table_org$zon <- as.character(cz_table_org$zon)
 
-   print(paste("iz:",iz,sep=""))
-   dif_area=0.
-   area_org <- cz_table_org$area[iz]
-   area_new <- cz_table$area[(cz_table$gdd == cz_table_org$gdd[iz]) & (cz_table$zon==cz_table_org$zon[iz])] 
-   if( length(area_new)>0 & !is.na(area_org))  {
-     dif_area <- area_new - area_org 
-   }else{
-     dif_area <- 0.0 
-   }
-   print(paste("dif_area:",dif_area,"gdd_zn:",cz_table$gdd[iz], "zonal lat:",cz_table_org$zon[iz],sep=" "))
+    #print(paste("iz:",iz,sep=""))
+    dif_area=0.
+    area_org <- cz_table_org$area[(cz_table_org$gdd==cz_table$gdd[iz])&(cz_table_org$zon==cz_table$zon[iz])]
+    area_new <- cz_table$area[iz] 
+    if( length(area_new)>0 & length(area_org)>0 ) {
+             dif_area <- sum(area_new - area_org) 
+    } else if ( (length(area_org)==0) )  {
+                        dif_area <- area_new 
+    } else {  dif_area <- 0.0  }
+
+#    if( (cz_table_org$gdd[iz] == "A") | (cz_table_org$gdd[iz] == "A1") | (cz_table_org$gdd[iz]=="A2")  ) {
+#          print(paste("dif_area:",dif_area,"From A to new gdd_zn:",cz_table$gdd[iz], "zonal lat:",cz_table_org$zon[iz],sep=" "))
+#    }
+#    if( (cz_table_org$gdd[iz] == "B") | (cz_table_org$gdd[iz] == "B1")   ) {
+#          print(paste("dif_area:",dif_area,"From B to new gdd_zn:",cz_table$gdd[iz], "zonal lat:",cz_table_org$zon[iz],sep=" "))
+#    }
    #add positive or negative 
    if (dif_area > 0.) {
-      tmp <- data.frame(gdd=cz_table_org$gdd[iz], zon=cz_table_org$zon[iz], pos.area=dif_area, neg.area=0.0)
+      tmp <- data.frame(gdd=cz_table$gdd[iz], zon=cz_table$zon[iz], pos.area=dif_area, neg.area=0.0)
    }else if(dif_area < 0.) {
-      tmp <- data.frame(gdd=cz_table_org$gdd[iz], zon=cz_table_org$zon[iz], pos.area=0.0, neg.area=dif_area)   
+      tmp <- data.frame(gdd=cz_table$gdd[iz], zon=cz_table$zon[iz], pos.area=0.0, neg.area=dif_area)   
    }else{
-      tmp <- data.frame(gdd=cz_table_org$gdd[iz], zon=cz_table_org$zon[iz], pos.area=0.0, neg.area=0.0)
+      tmp <- data.frame(gdd=cz_table$gdd[iz], zon=cz_table$zon[iz], pos.area=0.0, neg.area=0.0)
    }
-  cz_table_dif <- rbind(cz_table_dif,tmp)
+      cz_table_dif <- rbind(cz_table_dif,tmp)
  }
 
 cz_table_dif <- cz_table_dif[complete.cases(cz_table_dif), ]
@@ -383,36 +408,14 @@ bar_plot <- ggplot(data1, aes(zon)) + ylim(-10,10) + geom_bar(aes(y=pos.area, fi
            values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
                       "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
                       "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4") )
-
-bar_plot <- bar_plot + labs(y="Changes in Extent Area (M km2)", x=" ") + theme(legend.position="none", axis.title.y=element_blank() )
-
-
-
-} else {
-
-
-data1 <- cz_table_org                                                 # Replicate original data
-data1$zon <- factor(data1$zon,                                    # Change ordering manually
-                  levels = c("S65","S55","S45","S35","S25","S15","S05",
-                             "N05","N15","N25","N35","N45","N55","N65"))
-#
-col.txt <- cz.color 
-
-bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identity") + coord_flip() + scale_fill_manual(
-           values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
-                      "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
-                      "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4"))
-bar_plot <- bar_plot + labs(y = "Extent Area (M km2)", x = "Zonal Band")
-bar_plot <- bar_plot + guides(fill=guide_legend(title="GDD EnZ"))
-bar_plot <- bar_plot + theme(legend.position = c(0.93, 0.32), legend.key.size = unit(1, 'cm'))
-}
-
+ylab.txt <- bquote(.(scenario.txt[isc]) ~ .(exp.yr.txt[jyr]) ~ (Mkm^2))
+bar_plot <- bar_plot + ylab(ylab.txt)  + theme( legend.position="none", axis.title.y=element_blank() )
 
 
 #if (jyr ==  1) bar_plot <- bar_plot + theme(legend.position = "none")
 
 #add bar plot  to pdf
-assign(paste("bar_plot_",jyr,sep=""), bar_plot)
+assign(paste("bar_plot_",(irun+1),sep=""), bar_plot)
 
 
 
@@ -474,7 +477,7 @@ library("circlize")
   mat <- gross_MATRIX
  cz_name <-  c("A1","A","A2","B","B1","C","D","E",
               "F","G","H","I",
-              "J","K","L","M","N","P")
+              "J","K","L","M","N","O")
 
  
   
@@ -498,9 +501,11 @@ library("circlize")
       # 
       newRow <- data.frame(From=colnames(mat)[i],To=rownames(mat)[j],Area=mat[i,j] ) 
       df_matrix <- rbind(df_matrix, newRow)
-      print(df_matrix)
-    } # end of j
+      
+   } # end of j
   } # end of i
+  
+  print(df_matrix)
   
   write.table(x=df_matrix, 
               file="gross_exchange_data.csv",
@@ -518,14 +523,14 @@ library("circlize")
 #  par( oma=c(0,0,0,0), mar=c(3,2,5,2),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), new=FALSE)
  # par(oma=c(0,0,0,0), mar=c(3,2,5,2),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0),new=FALSE)
 
-  circos.par(start.degree = 160, clock.wise = TRUE)
+circos.par(start.degree = 160, clock.wise = TRUE)
   chordDiagram(x = df0, transparency = 0.15, grid.col = cz.color,
                directional = 1 ,   direction.type = c("arrows", "diffHeight"), diffHeight  = 0.05,
                annotationTrack = "grid", annotationTrackHeight = c(0.01, 0.025),
                link.arr.type = "big.arrow", link.sort = TRUE, link.largest.ontop = TRUE)
   #title(paste("Hitorial mean to ",exp.yr[jyr],sep=""))
   # add text and axis
-  circos.trackPlotRegion(
+circos.trackPlotRegion(
     track.index = 1, 
     bg.border = NA, 
     panel.fun = function(x, y) {
@@ -627,9 +632,12 @@ dev.off()
 
 #library("ggpubr")
 library("gridExtra")
-pdf("zonal_change.pdf",width=12,height=6)
-grid.arrange(bar_plot_1, bar_plot_2, bar_plot_3, bar_plot_4  
-             , ncol = 4, nrow = 1)
+pdf("zonal_change.pdf",width=12,height=24)
+grid.arrange(bar_plot_1, bar_plot_2, bar_plot_3, bar_plot_4 
+             ,bar_plot_1, bar_plot_5, bar_plot_6, bar_plot_7 
+             ,bar_plot_1, bar_plot_8, bar_plot_9, bar_plot_10 
+             ,bar_plot_1, bar_plot_11, bar_plot_12, bar_plot_13 
+             ,col = 4, nrow = 4)
 
 dev.off()
 
