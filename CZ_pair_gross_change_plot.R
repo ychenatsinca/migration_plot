@@ -84,8 +84,8 @@ ez.color <- colorRampPalette(
     "gold","hotpink"))(6)
 
 ref.yr <- c("1950_2000")
-exp.yr <- c( "2010_2020", "2040_2050", "2070_2080","2090_2100")
-exp.yr.txt <- c( "2010-2040", "2040-2070", "2070-2090","2090-2100")
+exp.yr <- c(      "2020_2030","2040_2050","2060_2070","2090_2100")
+exp.yr.txt <- c( "2020-2040","2040-2060","2060-2090")
 
 
 
@@ -98,8 +98,8 @@ scenario.txt <- c("SSP126:","SSP245:","SSP370:","SSP585:")
 
 
 
-pdf_fname=c(paste( "./pdf_files/","Gross_change.pdf",sep="") )
-pdf(pdf_fname,width=15, height=9)
+pdf_fname=c(paste( "./pdf_files/","Gross_change_2020_2100.pdf",sep="") )
+pdf(pdf_fname,width=24, height=12)
 #pdf(pdf_file,width=12, height=10)
 #par( oma=c(1,1,2,1), mar=c(3,2,5,2),plt = c(0.05,0.95,0.05,.95), mgp=c(1,1,0))
 
@@ -181,6 +181,7 @@ leg.txt <-  c("A","B","C","D","E",
               "F","G","H","I",
               "J","K","L","M","N","O")
 
+#First page plot for historical plot 
 par(oma=c(0,0,0,0), mar=c(0,0,0,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0))
 plot(plot.gd,  ylim=c(-65,90),xlim=c(-180,180), xaxt="n", yaxt="n",
      # main="Daily mean bias of Growing Degree-Days (oC)",
@@ -195,7 +196,7 @@ lines(coastlines, lwd=2.0, add=T)
 
 
 par(oma=c(1,0,1,0), mar=c(5,0,5,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), new=FALSE)
-layout(matrix(data=c(1,2,3,4,5,6,7,8,9,10),nrow=2, ncol=5,  byrow=TRUE),
+layout(matrix(data=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24),nrow=4, ncol=6,  byrow=TRUE),
        widths=c(1,1,1), heights=c(1,1,1))
 #
 irun=0
@@ -207,7 +208,7 @@ inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",sce
 LU_A <- as.matrix(raster(inputfileA, varname="CZ_index")) *mask
 
 # assign GDD zone to Alphabat 
-iGDD_Z <- LU_A
+GDD_Z <- LU_A
 
 cz_name <-  c("A1","A","A2","B","B1","C","D","E",
               "F","G","H","I",
@@ -281,6 +282,7 @@ bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identit
                       "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4"))
 ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr[jyr])~EnZ~(Mkm^2))
 bar_plot <- bar_plot +  ylab(ylab.txt) + xlab("Latitude")
+bar_plot <- bar_plot + theme( legend.position="none")
 #assign to bar_plot_1
 assign(paste("bar_plot_init_",isc,sep=""), bar_plot)
 }
@@ -360,7 +362,7 @@ bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identit
 ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr[jyr+1])~EnZ~(Mkm^2))
 bar_plot <- bar_plot +  ylab(ylab.txt) 
 bar_plot <- bar_plot + theme( axis.title.y=element_blank() )
-
+bar_plot <- bar_plot + theme( legend.position="none")
 #assign to bar_plot_1
 assign(paste("bar_plot_end_",isc,sep=""), bar_plot)
 }
@@ -418,7 +420,7 @@ data1$zon <- factor(data1$zon,                                    # Change order
                   levels = c("S65","S55","S45","S35","S25","S15","S05",
                              "N05","N15","N25","N35","N45","N55","N65"))
 
-bar_plot <- ggplot(data1, aes(zon)) + ylim(-10,10) + geom_bar(aes(y=pos.area, fill=gdd), stat="identity") + geom_bar(aes(y=neg.area, fill=gdd), stat="identity") + coord_flip() + scale_fill_manual(
+bar_plot <- ggplot(data1, aes(zon)) + ylim(-7.5,7.5) + geom_bar(aes(y=pos.area, fill=gdd), stat="identity") + geom_bar(aes(y=neg.area, fill=gdd), stat="identity") + coord_flip() + scale_fill_manual(
            values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
                       "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
                       "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4") )
@@ -426,7 +428,7 @@ ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr.txt[jyr])~EnZ~Change~(Mkm^2))
 #ylab.txt <- c("SSP")
 bar_plot <- bar_plot + ylab(ylab.txt) 
 bar_plot <- bar_plot + guides(fill=guide_legend(title="EnZ"))
-bar_plot <- bar_plot + theme(legend.position = c(0.92, 0.32), legend.key.size = unit(0.15, 'cm'), axis.title.y=element_blank())
+bar_plot <- bar_plot + theme(legend.position = c(0.9, 0.4), legend.key.size = unit(0.15, 'cm'), axis.title.y=element_blank())
 #
 
 #if (jyr ==  1) bar_plot <- bar_plot + theme(legend.position = "none")
@@ -600,7 +602,7 @@ leg.txt <-  c("A","B","C","D","E",
               "F","G","H","I",
               "J","K","L","M","N","P")
 
-if ((jyr==1) | (jyr==4) ) {
+if ((jyr==1) | (jyr==2)| (jyr==3) ) {
 #plot(x=0,y=1,xaxt="n", yaxt="n",type="n")
 #plot(coastlines,col="white", lwd=0.1, ylim=c(-56,90),xlim=(-180,180),add=T)
 #
@@ -608,21 +610,21 @@ par(xpd=FALSE)
 
 #start plot 
 
-plot(plot.gd,  ylim=c(-65,85),xlim=c(-145,155), xaxt='n', yaxt='n',legend=FALSE,
+plot(plot.gd,  ylim=c(-65,85),xlim=c(-150,165), xaxt='n', yaxt='n',legend=FALSE,
      # main="Daily mean bias of Growing Degree-Days (oC)",
      # xlab="", ylab="Latitude", col=wes_palette("Zissou1", 50, type = "continuous"),
      xlab="", ylab="", col=cz.color, box=FALSE, axes=FALSE)#,
      #smallplot=c(0.05,.95, 0.2, 0.24), horizontal=T,
      #axis.args=list(at=leg.at, labels=leg.txt, cex.axis=0.4,line=0.25, gap.axis=0.0),
      #legend.args=list(text= "Climate Zone" , side=3, line=0.1, cex=0.5))
-}
+
 
 #add coastline
 lines(coastlines, lwd=0.3, add=T)
 #add gross change location
 #plot(gc_poly,lwd=0.3,col=NA,add=T,border="lightgray",lty="dotted")
-points(gc_point,pch = 21, bg = NA, col = "black", 
-     lwd = 0.05, cex = .15,add=T)
+points(gc_point,pch = 21, bg = NA, col = "white", 
+     lwd = 0.1, cex = .15,add=T)
 #degs.nlat <- seq(15,90, 30)
 #axis(side = 2, at = degs.nlat, srt=0, las=1,
 #     labels = paste0(degs.nlat,"?X","N") , tck = -0.02)
@@ -638,6 +640,9 @@ points(gc_point,pch = 21, bg = NA, col = "black",
 #axis(side = 1, at = degs.wlon, srt=0, las=1,
 #     labels = paste0(degs.wlon*-1,"?X","W") , tck = -0.02)
   mtext(paste(scenario.txt[isc],exp.yr.txt[jyr],sep=" "),side=3,line=-2,cex=1.5)
+
+} #end if
+
 } #ld_go
 
 
@@ -649,11 +654,11 @@ dev.off()
 
 #library("ggpubr")
 library("gridExtra")
-pdf("zonal_change.pdf",width=18,height=12)
-grid.arrange( bar_plot_init_1, bar_plot_2, bar_plot_3, bar_plot_4 ,  bar_plot_end_1,
-              bar_plot_init_2, bar_plot_5, bar_plot_6, bar_plot_7,   bar_plot_end_2,
-              bar_plot_init_3, bar_plot_8, bar_plot_9, bar_plot_10,  bar_plot_end_3,
-              bar_plot_init_4, bar_plot_11, bar_plot_12, bar_plot_13,bar_plot_end_4, 
+pdf("./pdf_files/zonal_change_2020_2100.pdf",width=24,height=12)
+grid.arrange( bar_plot_init_1, bar_plot_2, bar_plot_3, bar_plot_4,    bar_plot_end_1,
+              bar_plot_init_2, bar_plot_5, bar_plot_6, bar_plot_7,    bar_plot_end_2,
+              bar_plot_init_3, bar_plot_8, bar_plot_9, bar_plot_10,   bar_plot_end_3,
+              bar_plot_init_4, bar_plot_11, bar_plot_12, bar_plot_13, bar_plot_end_4, 
               ncol = 5, nrow = 4 )
 
 dev.off()
