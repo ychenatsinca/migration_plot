@@ -209,7 +209,7 @@ par(oma=c(1,0,1,0), mar=c(5,0,5,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), ne
 layout(matrix(data=c(1,2,3,4,5,6,7,8),nrow=2, ncol=4,  byrow=TRUE),
        widths=c(1,1,1), heights=c(1,1,1))
 #
-
+irun=0
 for (jyr in 1:8) {
 irun = irun +1
 #inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr],"_climate_zone.nc",sep=""))
@@ -561,7 +561,7 @@ set.color =  c("B"="cyan","D"="blue","F"="darkgreen","G"="green2",
 #                 "K"="tan4","L"="tan1","M"="pink1","N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"="hotpink"))
 
 
-  circos.par( start.degree = 90, clock.wise = TRUE, track.margin = c(-0.14, 0.16), circle.margin=c(0.01, 0.01, 0.01, 0.01))
+  circos.par( start.degree = 85, clock.wise = TRUE, track.margin = c(-0.14, 0.16), circle.margin=c(0.01, 0.01, 0.01, 0.01))
   chordDiagram(x = df0, transparency = 0.15, grid.col = set.color,
                directional = 1 ,   direction.type = c("diffHeight","arrows"),
                annotationTrack = c("grid","axes"), annotationTrackHeight = c(0.005),
@@ -575,14 +575,14 @@ circos.trackPlotRegion(
       sector.index = get.cell.meta.data("sector.index")
       reg1 = df1$reg2[df1$region == sector.index]
     #  reg2 = df1$reg2[df1$region == sector.index]
-      circos.text(x = mean(xlim), y = 35,
+      circos.text(x = mean(xlim), y = 40,
                   labels = reg1, facing = "bending", cex = 1.8)
       # circos.text(x = mean(xlim), y = 3.1,  labels = reg2, facing = "bending", cex = 1.2)
       circos.axis(h = "top", major.at = seq(from = 0, to = xlim[2], by = 10),
                   minor.ticks = 1, major.tick.length=10,labels.niceFacing = TRUE,labels.cex =1.5)
     })
 
-text(0, 0, paste(exp.yr.txt[jyr],"\n",scenario.txt[isc],sep=""), cex = 2.)
+text(0, 0, paste(exp.yr.txt[jyr],"\n",scenario.txt[isc],sep=""), cex = 2.5)
 
 #show circ parameter
 circos.par
