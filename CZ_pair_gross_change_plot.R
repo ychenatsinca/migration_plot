@@ -83,25 +83,24 @@ ez.color <- colorRampPalette(
     "springgreen4","springgreen1",
     "gold","hotpink"))(6)
 
-ref.yr <- c("1950_2000")
-exp.yr <- c(      "2020_2030","2040_2050","2060_2070","2090_2100")
-exp.yr.txt <- c( "2020-2040","2040-2060","2060-2090")
 
+
+
+ref.yr <- c("1950_2000")
+exp.yr <- c("2010_2020","2020_2030","2030_2040","2040_2050","2050_2060","2060_2070","2070_2080","2080_2090","2090_2100")
+#exp.yr.txt <- c( "2020-2040","2040-2060","2060-2090")
+#exp.yr.txt <- c( "2020-2040","2020-2040","2020-2090")
+exp.yr.txt <- c("toward 2030s","toward 2040s","toward 2050s","toward 2060s",
+                "toward 2070s","toward 2080s","toward 2090s","toward 2100s")
 
 
 scenario <- c("ssp126","ssp245","ssp370","ssp585")
-scenario.txt <- c("SSP126:","SSP245:","SSP370:","SSP585:")
+scenario.txt <- c("(SSP126)","(SSP245)","(SSP370)","(SSP585)")
 
 #scenario <- c("ssp585")
 #scenario.txt <- c("SSP585")
 
 
-
-
-pdf_fname=c(paste( "./pdf_files/","Gross_change_2020_2100.pdf",sep="") )
-pdf(pdf_fname,width=24, height=12)
-#pdf(pdf_file,width=12, height=10)
-#par( oma=c(1,1,2,1), mar=c(3,2,5,2),plt = c(0.05,0.95,0.05,.95), mgp=c(1,1,0))
 
 #layout(matrix(data=seq(1,24,1),nrow=4, ncol=6,  byrow=TRUE),
 #       widths=c(1,1,1), heights=c(1,1,1))
@@ -115,9 +114,9 @@ LU_A <- as.matrix(raster(inputfileA, varname="CZ_index")) *mask
 
 # assign GDD zone to Alphabat 
 GDD_Z <- LU_A
-cz_name <-  c("A1","A","A2","B","B1","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","O")
+cz_name <-  c("A","B","C","D","E","F","G","H",
+              "I","J","K","L",
+              "M","N","O","P","Q","R")
 GDD_Z[GDD_Z <= 0.] <- NA
 for (iz in 1:18) {
 GDD_Z[GDD_Z == iz] <- cz_name[iz]
@@ -177,9 +176,9 @@ plot.gd <- fun_a2r(input.arr=t(LU_A[,ny:1]) )
 leg.at  <-  c("2.5","4.5","6","7","8",
               "9","10","11","12",
               "13","14","15","16","17","18")
-leg.txt <-  c("A","B","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","O")
+leg.txt <-  c("C","E","F","G","H",
+              "I","J","K","L",
+              "M","N","O","P","Q","R")
 
 #First page plot for historical plot 
 par(oma=c(0,0,0,0), mar=c(0,0,0,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0))
@@ -195,24 +194,33 @@ lines(coastlines, lwd=2.0, add=T)
 #
 
 
-par(oma=c(1,0,1,0), mar=c(5,0,5,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), new=FALSE)
-layout(matrix(data=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24),nrow=4, ncol=6,  byrow=TRUE),
-       widths=c(1,1,1), heights=c(1,1,1))
-#
+
 irun=0
 # get  nc file for migration plot
 for (isc in 1:4) {
-for (jyr in 1:3) {
+
+#open pdf 
+pdf_fname=c(paste( "./pdf_files/","Gross_change_2020_2100(ref_hist)",scenario[isc],".pdf",sep="") )
+pdf(pdf_fname,width=24, height=12)
+#pdf(pdf_file,width=12, height=10)
+#par( oma=c(1,1,2,1), mar=c(3,2,5,2),plt = c(0.05,0.95,0.05,.95), mgp=c(1,1,0))
+
+par(oma=c(1,0,1,0), mar=c(5,0,5,0),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), new=FALSE)
+layout(matrix(data=c(1,2,3,4,5,6,7,8),nrow=2, ncol=4,  byrow=TRUE),
+       widths=c(1,1,1), heights=c(1,1,1))
+#
+
+for (jyr in 1:8) {
 irun = irun +1
-inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr],"_climate_zone.nc",sep=""))
+#inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_",exp.yr[jyr],"_climate_zone.nc",sep=""))
+#inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_",scenario[isc],"_","2020_2030","_climate_zone.nc",sep=""))
+inputfileA <- c(paste("/lfs/home/ychen/TaiESM/CZ_10yrs/cz_nc_files/TaiESM1_histor_",  ref.yr,"_climate_zone.nc",sep=""))
+
 LU_A <- as.matrix(raster(inputfileA, varname="CZ_index")) *mask
 
 # assign GDD zone to Alphabat 
 GDD_Z <- LU_A
 
-cz_name <-  c("A1","A","A2","B","B1","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","O")
 GDD_Z[GDD_Z <= 0.] <- NA
 for (iz in 1:18) {
 GDD_Z[GDD_Z == iz] <- cz_name[iz]
@@ -277,9 +285,11 @@ data1$zon <- factor(data1$zon,                                    # Change order
                              "N05","N15","N25","N35","N45","N55","N65"))
 #
 bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identity") + coord_flip() + scale_fill_manual(
-           values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
-                      "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
-                      "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4"))
+      values=  c("A"="cyan","B"="cyan","C"="cyan","D"="blue","E"="blue",
+                 "F"="darkgreen","G"="green2","H"="springgreen3","I"="springgreen1","J"="plum",
+                 "K"="tan4","L"="tan1","M"="pink1","N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"="hotpink"))
+
+
 ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr[jyr])~EnZ~(Mkm^2))
 bar_plot <- bar_plot +  ylab(ylab.txt) + xlab("Latitude")
 bar_plot <- bar_plot + theme( legend.position="none")
@@ -292,9 +302,6 @@ LU_B <- as.matrix(raster(inputfileB, varname="CZ_index")) *mask
 
 GDD_Z <- LU_B
 # assign GDD zone to Alphabat 
-cz_name <-  c("A1","A","A2","B","B1","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","O")
 GDD_Z[GDD_Z <= 0.] <- NA
 for (iz in 1:18) {
 GDD_Z[GDD_Z == iz] <- cz_name[iz]
@@ -349,16 +356,17 @@ cz_table <- aggregate(tmp.table$area, by=list(gdd=tmp.table$gdd,zon=tmp.table$zo
 colnames(cz_table) <- c("gdd","zon","area")
 
 #print(cz_table)
-if (jyr==3) {
+if (jyr==8) {
 data1 <- cz_table                                                # Replicate original data
 data1$zon <- factor(data1$zon,                                    # Change ordering manually
                   levels = c("S65","S55","S45","S35","S25","S15","S05",
                              "N05","N15","N25","N35","N45","N55","N65"))
 #
 bar_plot <- ggplot(data1, aes(x=zon, y=area, fill=gdd)) + geom_bar(stat="identity") + coord_flip() + scale_fill_manual(
-           values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
-                      "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
-                      "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4"))
+       values=  c("A"="cyan","B"="cyan","C"="cyan","D"="blue","E"="blue",
+                 "F"="darkgreen","G"="green2","H"="springgreen3","I"="springgreen1","J"="plum",
+                 "K"="tan4","L"="tan1","M"="pink1","N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"="hotpink"))
+
 ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr[jyr+1])~EnZ~(Mkm^2))
 bar_plot <- bar_plot +  ylab(ylab.txt) 
 bar_plot <- bar_plot + theme( axis.title.y=element_blank() )
@@ -420,15 +428,17 @@ data1$zon <- factor(data1$zon,                                    # Change order
                   levels = c("S65","S55","S45","S35","S25","S15","S05",
                              "N05","N15","N25","N35","N45","N55","N65"))
 
-bar_plot <- ggplot(data1, aes(zon)) + ylim(-7.5,7.5) + geom_bar(aes(y=pos.area, fill=gdd), stat="identity") + geom_bar(aes(y=neg.area, fill=gdd), stat="identity") + coord_flip() + scale_fill_manual(
-           values = c("A"="cyan","B"="#0000FF","C"="#006400","D"="#00EE00","E"="#00CD66",
-                      "F"="#00FF7F","G"="#DDA0DD","H"="#8B5A2B","I"="#FFA54F","J"="#FFB5C5",
-                      "K"="#FFD700","L"="#FFFF00","M"="#EEDD82","N"="#F5DEB3","O"="#FF69B4") )
-ylab.txt <- bquote(.(scenario.txt[isc])~.(exp.yr.txt[jyr])~EnZ~Change~(Mkm^2))
+bar_plot <- ggplot(data1, aes(zon)) + ylim(-15,15) + geom_bar(aes(y=pos.area, fill=gdd), stat="identity") + geom_bar(aes(y=neg.area, fill=gdd), stat="identity") + coord_flip() + scale_fill_manual(
+           values=  c("A"="cyan","B"="cyan","C"="cyan","D"="blue","E"="blue",
+                 "F"="darkgreen","G"="green2","H"="springgreen3","I"="springgreen1","J"="plum",
+                 "K"="tan4","L"="tan1","M"="pink1","N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"="hotpink"))
+
+ylab.txt <- bquote(.(exp.yr.txt[jyr])~.(scenario.txt[isc])~(Mkm^2))
 #ylab.txt <- c("SSP")
 bar_plot <- bar_plot + ylab(ylab.txt) 
 bar_plot <- bar_plot + guides(fill=guide_legend(title="EnZ"))
-bar_plot <- bar_plot + theme(legend.position = c(0.9, 0.4), legend.key.size = unit(0.15, 'cm'), axis.title.y=element_blank())
+bar_plot <- bar_plot + theme(legend.position = c(0.9, 0.5), legend.key.size = unit(0.6, 'cm'), axis.title.y=element_blank(), 
+                             axis.text = element_text(size = 16), axis.title = element_text(size = 20))
 #
 
 #if (jyr ==  1) bar_plot <- bar_plot + theme(legend.position = "none")
@@ -478,7 +488,7 @@ assign(paste("bar_plot_",(irun+1),sep=""), bar_plot)
 
 
 
-if (jyr <= 3) {
+#if (jyr <= 3) {
 # get the gross change map 
 
 
@@ -494,16 +504,13 @@ library("circlize")
 
 
   mat <- gross_MATRIX
- cz_name <-  c("A1","A","A2","B","B1","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","O")
 
  
   
-#  cz_name <-c("Artic1","Artic2","Artic3","Bol","Bol/Alp",
-#              "Ext.Cd.wt","Ext.Cd.mc","Cd.mc","Cl.Tmp.xec","Cl.Tmp.mi",
-#              "Wm.Tmp.mc","Wm.Tmp.xc","Sub.Trp.","Hot.dy","Hot.ad",
-#              "Ext.Hot.ad","Ext.Hot.xc","Trp")
+  cz_name_txt <-c("Artic","Artic","Artic","Bol.","Bol./Alp.",
+              "Et.Cd.wt","Et.Cd.mc","Cd.mc","Cl.Tm.xc","Cl.Tm.mi",
+              "Wm.Tm.mc","Wm.Tm.xc","Sub.Tp.","Ht.dy","Ht.ad",
+              "Et.Ht.ad","Et.Ht.xc","Tropical")
   # the col and raw names
   rownames(mat) = cz_name 
   colnames(mat) = cz_name
@@ -526,45 +533,62 @@ library("circlize")
   
   print(df_matrix)
   
+  table.fname = c(paste(scenario.txt[isc],exp.yr.txt[jyr],"_gross_exchange_data.csv",sep=""))
   write.table(x=df_matrix, 
-              file="gross_exchange_data.csv",
+              file=table.fname,
               sep=",",
               row.names =FALSE,
               col.names=TRUE) 
   
   #read in the data.frame for both gross change and color information
-  df0 <- read.csv(file = "gross_exchange_data.csv", stringsAsFactors=FALSE)
+  df0 <- read.csv(file = table.fname, stringsAsFactors=FALSE)
 #  df1 <- read.csv(file = "gross_exchange_color.csv", stringsAsFactors=FALSE)
   
-  df1<-data.frame(region=cz_name, order1=seq(1,18,1), col1=cz.color,reg1=cz_name,reg1=cz_name)
+  df1<-data.frame(region=cz_name, order1=seq(1,18,1), col1=cz.color,reg1=cz_name,reg2=cz_name_txt)
  
 # start plot
 #  par( oma=c(0,0,0,0), mar=c(3,2,5,2),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0), new=FALSE)
  # par(oma=c(0,0,0,0), mar=c(3,2,5,2),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0),new=FALSE)
+  df1<-data.frame(region=cz_name, order1=seq(1,18,1), col1=cz.color,reg1=cz_name,reg2=cz_name_txt)
 
-circos.par(start.degree = 160, clock.wise = TRUE)
-  chordDiagram(x = df0, transparency = 0.15, grid.col = cz.color,
-               directional = 1 ,   direction.type = c("arrows", "diffHeight"), diffHeight  = 0.05,
-               annotationTrack = "grid", annotationTrackHeight = c(0.01, 0.025),
-               link.arr.type = "big.arrow", link.sort = TRUE, link.largest.ontop = TRUE)
-  #title(paste("Hitorial mean to ",exp.yr[jyr],sep=""))
-  # add text and axis
+# start plot
+set.color =  c("B"="cyan","D"="blue","F"="darkgreen","G"="green2",
+                       "H"="springgreen3","I"="springgreen1","J"="plum","K"="tan4","L"="tan1","M"="pink1",
+                       "N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"= "hotpink")
+
+#         set.color=  c("A"="cyan","B"="cyan","C"="cyan","D"="blue","E"="blue",
+#                 "F"="darkgreen","G"="green2","H"="springgreen3","I"="springgreen1","J"="plum",
+#                 "K"="tan4","L"="tan1","M"="pink1","N"="gold","O"="yellow","P"="lightgoldenrod","Q"="wheat","R"="hotpink"))
+
+
+  circos.par( start.degree = 90, clock.wise = TRUE, track.margin = c(-0.14, 0.16), circle.margin=c(0.01, 0.01, 0.01, 0.01))
+  chordDiagram(x = df0, transparency = 0.15, grid.col = set.color,
+               directional = 1 ,   direction.type = c("diffHeight","arrows"),
+               annotationTrack = c("grid","axes"), annotationTrackHeight = c(0.005),
+               link.arr.type = "big.arrow", link.sort = TRUE, link.largest.ontop = TRUE, link.arr.length = 0.08)
+# add text and axis
 circos.trackPlotRegion(
-    track.index = 1, 
-    bg.border = NA, 
+    track.index = 1,
+    bg.border = NA,
     panel.fun = function(x, y) {
       xlim = get.cell.meta.data("xlim")
       sector.index = get.cell.meta.data("sector.index")
-      reg1 = df1$reg1[df1$region == sector.index]
-      reg2 = df1$reg2[df1$region == sector.index]
-      circos.text(x = mean(xlim), y = 20, 
-                  labels = reg1, facing = "bending", cex = 1)
+      reg1 = df1$reg2[df1$region == sector.index]
+    #  reg2 = df1$reg2[df1$region == sector.index]
+      circos.text(x = mean(xlim), y = 35,
+                  labels = reg1, facing = "bending", cex = 1.8)
       # circos.text(x = mean(xlim), y = 3.1,  labels = reg2, facing = "bending", cex = 1.2)
-      circos.axis(h = "top", major.at = seq(from = 0, to = xlim[2], by = 5), 
-                  minor.ticks = 25, major.tick.percentage =50,labels.niceFacing = TRUE,labels.cex = 0.5)
+      circos.axis(h = "top", major.at = seq(from = 0, to = xlim[2], by = 10),
+                  minor.ticks = 1, major.tick.length=10,labels.niceFacing = TRUE,labels.cex =1.5)
     })
-  circos.clear()  
-}# jyr ld 
+
+text(0, 0, paste(exp.yr.txt[jyr],"\n",scenario.txt[isc],sep=""), cex = 2.)
+
+#show circ parameter
+circos.par
+  circos.clear()
+
+#}# jyr ld 
   
 #par(new=FALSE)
 #par(oma=c(0,0,0,0), mar=c(3,2,5,2),plt = c(0.01,0.99,0.01,.99), mgp=c(1,1,0))
@@ -586,7 +610,7 @@ gc_poly <- rasterToPolygons(gc_mask.rst, dissolve=TRUE)
 #
 gc_point <- rasterToPoints(gc_mask.rst) 
 
-ld_go <- TRUE
+ld_go <- FALSE
 
 if( ld_go) {
 
@@ -594,15 +618,13 @@ if( ld_go) {
 #LU_B <- LU_B*gc_mask
 
 plot.gd <- fun_a2r(input.arr=t(LU_B[,ny:1]) )
-
 leg.at  <-  c("2.5","4.5","6","7","8",
               "9","10","11","12",
               "13","14","15","16","17","18")
-leg.txt <-  c("A","B","C","D","E",
-              "F","G","H","I",
-              "J","K","L","M","N","P")
-
-if ((jyr==1) | (jyr==2)| (jyr==3) ) {
+leg.txt <-  c("C","E","F","G","H",
+              "I","J","K","L",
+              "M","N","O","P","Q","R")
+#if ((jyr==1) | (jyr==2)| (jyr==3) ) {
 #plot(x=0,y=1,xaxt="n", yaxt="n",type="n")
 #plot(coastlines,col="white", lwd=0.1, ylim=c(-56,90),xlim=(-180,180),add=T)
 #
@@ -641,27 +663,25 @@ points(gc_point,pch = 21, bg = NA, col = "white",
 #     labels = paste0(degs.wlon*-1,"?X","W") , tck = -0.02)
   mtext(paste(scenario.txt[isc],exp.yr.txt[jyr],sep=" "),side=3,line=-2,cex=1.5)
 
-} #end if
+#} #end if
 
 } #ld_go
 
 
 
-} #end of ic
 } #end of jyr
 
 dev.off()
 
 #library("ggpubr")
 library("gridExtra")
-pdf("./pdf_files/zonal_change_2020_2100.pdf",width=24,height=12)
-grid.arrange( bar_plot_init_1, bar_plot_2, bar_plot_3, bar_plot_4,    bar_plot_end_1,
-              bar_plot_init_2, bar_plot_5, bar_plot_6, bar_plot_7,    bar_plot_end_2,
-              bar_plot_init_3, bar_plot_8, bar_plot_9, bar_plot_10,   bar_plot_end_3,
-              bar_plot_init_4, bar_plot_11, bar_plot_12, bar_plot_13, bar_plot_end_4, 
-              ncol = 5, nrow = 4 )
+pdf(paste("./pdf_files/zonal_change_2020_2100_(ref_hist)",scenario[isc],".pdf",sep=""),width=24,height=12)
+grid.arrange( bar_plot_2, bar_plot_3, bar_plot_4, bar_plot_5,
+              bar_plot_6, bar_plot_7, bar_plot_8, bar_plot_9,
+              ncol = 4, nrow = 2 )
 
 dev.off()
+} #end of isc
 
 # close the device
 
