@@ -505,12 +505,12 @@ library("circlize")
 
   mat <- gross_MATRIX
 
- 
   
-  cz_name_txt <-c("Artic","Artic","Artic","Bol.","Bol./Alp.",
-              "Et.Cd.wt","Et.Cd.mc","Cd.mc","Cl.Tm.xc","Cl.Tm.mi",
-              "Wm.Tm.mc","Wm.Tm.xc","Sub.Tp.","Ht.dy","Ht.ad",
-              "Et.Ht.ad","Et.Ht.xc","Tropical")
+  cz_name_txt <-c("Artic","Artic","Et.Cd.wt","Et.Cd.wt","Cd.wt", "Et.Cd.mc","Cd.mc",
+              "Cl.Tm.dy","Cl.Tm.xc","Cl.Tm.mt",
+              "Wm.Tm.mc","Wm.Tm.xc",
+              "Ht.mc","Ht.dy","Ht.ad",
+              "Et.Ht.ad","Et.Ht.xc","Et.Ht.mt")
   # the col and raw names
   rownames(mat) = cz_name 
   colnames(mat) = cz_name
